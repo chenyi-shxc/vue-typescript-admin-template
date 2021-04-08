@@ -13,9 +13,6 @@ declare module 'echarts' {
     export default echarts;
 }
 
-declare module 'echarts/lib/echarts';
-
-
 //结果表展示表
 interface SRtable{
     tableId: string

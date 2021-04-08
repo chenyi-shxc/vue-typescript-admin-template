@@ -9,7 +9,7 @@ import Workplace from '@/views/workplace/index.vue';
 // import TablesWapper from '@/views/tables/wapper.vue';
 const TablesWapper = () => import(/* webpackChunkName: "tables" */"@/views/tables/wapper.vue");
 // import ModuleSettingsWapper from '@/views/module-settings/wapper.vue';
-const ModuleSettingsWapper = ()=> import(/* webpackChunkName: "module" */'@/views/module-settings/wapper.vue');
+const ModuleSettingsWapper = () => import(/* webpackChunkName: "module" */'@/views/module-settings/wapper.vue');
 
 Vue.use(Router)
 
@@ -23,8 +23,105 @@ Vue.use(Router)
   }
 */
 
+// 公共路由
+export const constantRoutes = [
+  {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: (resolve: any) => require(['@/views/redirect'], resolve)
+      }
+    ]
+  },
+  {
+    path: '/login',
+    component: (resolve: any) => require(['@/views/login'], resolve),
+    hidden: true
+  },
+  {
+    path: '/404',
+    component: (resolve: any) => require(['@/views/error/404'], resolve),
+    hidden: true
+  },
+  {
+    path: '/401',
+    component: (resolve: any) => require(['@/views/error/401'], resolve),
+    hidden: true
+  },
+  {
+    path: '',
+    component: Layout,
+    redirect: 'index',
+    children: [
+      {
+        path: 'index',
+        component: (resolve: any) => require(['@/views/index'], resolve),
+        name: '首页',
+        meta: { title: '首页', icon: 'dashboard', noCache: true, affix: true }
+      }
+    ]
+  },
+  {
+    path: '/user',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'profile',
+        component: (resolve: any) => require(['@/views/system/user/profile/index'], resolve),
+        name: 'Profile',
+        meta: { title: '个人中心', icon: 'user' }
+      }
+    ]
+  },
+  {
+    path: '/dict',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'type/data/:dictId(\\d+)',
+        component: (resolve: any) => require(['@/views/system/dict/data'], resolve),
+        name: 'Data',
+        meta: { title: '字典数据', icon: '' }
+      }
+    ]
+  },
+  {
+    path: '/job',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'log',
+        component: (resolve: any) => require(['@/views/monitor/job/log'], resolve),
+        name: 'JobLog',
+        meta: { title: '调度日志' }
+      }
+    ]
+  },
+  {
+    path: '/gen',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'edit/:tableId(\\d+)',
+        component: (resolve: any) => require(['@/views/tool/gen/editTable'], resolve),
+        name: 'GenEdit',
+        meta: { title: '修改生成配置' }
+      }
+    ]
+  }
+]
+
 export default new Router({
-  // mode: 'history',  // Enable this if you need.
+  mode: 'history', // 去掉url中的#
+  // scrollBehavior: () => ({ y: 0 }),
   scrollBehavior: (to, from, savedPosition) => {
     if (savedPosition) {
       return savedPosition
@@ -32,158 +129,5 @@ export default new Router({
       return { x: 0, y: 0 }
     }
   },
-  base: process.env.BASE_URL,
-  routes: [
-    {
-      path: '/login',
-      component: () => import(/* webpackChunkName: "login" */ '@/views/login/index.vue'),
-      meta: { hidden: true }
-    },
-    {
-      path: '/404',
-      component: () => import(/* webpackChunkName: "404" */ '@/views/404.vue'),
-      meta: { hidden: true }
-    },
-    {
-      path: '/',
-      component: Container,
-      redirect: '/home',
-      children: [
-        {
-          path: 'dashboard',
-          component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'),
-          meta: {
-            title: 'Dashboard',
-            icon: 'dashboard'
-          }
-        },
-        {
-          path:'/home',
-          component: Workplace,
-          name: '工作台'
-        },
-        {
-          path:'/tables',
-          component: TablesWapper,
-          name:'账表'
-        },
-        {
-          path:'/module/:modelID?/:modelNo?',
-          component: ModuleSettingsWapper,
-          name:'模型'
-        }
-      ]
-    },
-    {
-      path: '/example',
-      component: Layout,
-      redirect: '/example/tree',
-      meta: {
-        title: 'Example',
-        icon: 'example'
-      },
-      children: [
-        {
-          path: 'tree',
-          component: () => import(/* webpackChunkName: "tree" */ '@/views/tree/index.vue'),
-          meta: {
-            title: 'Tree',
-            icon: 'tree'
-          }
-        },
-        {
-          path: 'table',
-          component: () => import(/* webpackChunkName: "table" */ '@/views/table/index.vue'),
-          meta: {
-            title: 'Table',
-            icon: 'table'
-          }
-        }
-      ]
-    },
-    {
-      path: '/form',
-      component: Layout,
-      children: [
-        {
-          path: 'index',
-          component: () => import(/* webpackChunkName: "form" */ '@/views/form/index.vue'),
-          meta: {
-            title: 'Form',
-            icon: 'form'
-          }
-        }
-      ]
-    },
-    {
-      path: '/nested',
-      component: Layout,
-      redirect: '/nested/menu1',
-      meta: {
-        title: 'Nested',
-        icon: 'nested'
-      },
-      children: [
-        {
-          path: 'menu1',
-          component: () => import(/* webpackChunkName: "menu1" */ '@/views/nested/menu1/index.vue'),
-          redirect: '/nested/menu1/menu1-1',
-          meta: { title: 'Menu1' },
-          children: [
-            {
-              path: 'menu1-1',
-              component: () => import(/* webpackChunkName: "menu1-1" */ '@/views/nested/menu1/menu1-1/index.vue'),
-              meta: { title: 'Menu1-1' }
-            },
-            {
-              path: 'menu1-2',
-              component: () => import(/* webpackChunkName: "menu1-2" */ '@/views/nested/menu1/menu1-2/index.vue'),
-              redirect: '/nested/menu1/menu1-2/menu1-2-1',
-              meta: { title: 'Menu1-2' },
-              children: [
-                {
-                  path: 'menu1-2-1',
-                  component: () => import(/* webpackChunkName: "menu1-2-1" */ '@/views/nested/menu1/menu1-2/menu1-2-1/index.vue'),
-                  meta: { title: 'Menu1-2-1' }
-                },
-                {
-                  path: 'menu1-2-2',
-                  component: () => import(/* webpackChunkName: "menu1-2-2" */ '@/views/nested/menu1/menu1-2/menu1-2-2/index.vue'),
-                  meta: { title: 'Menu1-2-2' }
-                }
-              ]
-            },
-            {
-              path: 'menu1-3',
-              component: () => import(/* webpackChunkName: "menu1-3" */ '@/views/nested/menu1/menu1-3/index.vue'),
-              meta: { title: 'Menu1-3' }
-            }
-          ]
-        },
-        {
-          path: 'menu2',
-          component: () => import(/* webpackChunkName: "menu2" */ '@/views/nested/menu2/index.vue'),
-          meta: { title: 'Menu2' }
-        }
-      ]
-    },
-    {
-      path: 'external-link',
-      component: Layout,
-      children: [
-        {
-          path: 'https://github.com/Armour/vue-typescript-admin-template',
-          meta: {
-            title: 'External Link',
-            icon: 'link'
-          }
-        }
-      ]
-    },
-    {
-      path: '*',
-      redirect: '/404',
-      meta: { hidden: true }
-    }
-  ]
+  routes: constantRoutes
 })

@@ -1,39 +1,43 @@
 import router from './router'
+import store from '@/store'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { Message } from 'element-ui'
 import { Route } from 'vue-router'
-import { UserModule } from '@/store/modules/user'
+// import { UserModule } from '@/store/modules/user'
+
+import { getToken } from '@/utils/auth'
+
 
 NProgress.configure({ showSpinner: false })
 
-const whiteList = ['/login']
+const whiteList = ['/login', '/auth-redirect', '/bind', '/register']
 
 router.beforeEach(async(to: Route, _: Route, next: any) => {
   // Start progress bar
   NProgress.start()
 
   // Determine whether the user has logged in
-  if (UserModule.token) {
+  if (getToken()) {
+    /* has token*/
     if (to.path === '/login') {
-      // If is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done()
     } else {
-      // Check whether the user has obtained his permission roles
-      if (UserModule.roles.length === 0) {
-        try {
-          // Get user info, including roles
-          await UserModule.GetUserInfo()
-          // Set the replace: true, so the navigation will not leave a history record
-          next({ ...to, replace: true })
-        } catch (err) {
-          // Remove token and redirect to login page
-          UserModule.ResetToken()
-          Message.error(err || 'Has Error')
-          next(`/login?redirect=${to.path}`)
-          NProgress.done()
-        }
+      if (store.getters.roles.length === 0) {
+        // 判断当前用户是否已拉取完user_info信息
+        store.dispatch('GetInfo').then(() => {
+          store.dispatch('GenerateRoutes').then(accessRoutes => {
+            // 根据roles权限生成可访问的路由表
+            router.addRoutes(accessRoutes) // 动态添加可访问路由表
+            next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
+          })
+        }).catch(err => {
+            store.dispatch('LogOut').then(() => {
+              Message.error(err)
+              next({ path: '/' })
+            })
+          })
       } else {
         next()
       }
