@@ -2,6 +2,15 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from '@/layout/index.vue'
 
+import Container from '@/components/container/index.vue'
+
+import Workplace from '@/views/workplace/index.vue';
+
+// import TablesWapper from '@/views/tables/wapper.vue';
+const TablesWapper = () => import(/* webpackChunkName: "tables" */"@/views/tables/wapper.vue");
+// import ModuleSettingsWapper from '@/views/module-settings/wapper.vue';
+const ModuleSettingsWapper = ()=> import(/* webpackChunkName: "module" */'@/views/module-settings/wapper.vue');
+
 Vue.use(Router)
 
 /*
@@ -37,8 +46,8 @@ export default new Router({
     },
     {
       path: '/',
-      component: Layout,
-      redirect: '/dashboard',
+      component: Container,
+      redirect: '/home',
       children: [
         {
           path: 'dashboard',
@@ -47,6 +56,21 @@ export default new Router({
             title: 'Dashboard',
             icon: 'dashboard'
           }
+        },
+        {
+          path:'/home',
+          component: Workplace,
+          name: '工作台'
+        },
+        {
+          path:'/tables',
+          component: TablesWapper,
+          name:'账表'
+        },
+        {
+          path:'/module/:modelID?/:modelNo?',
+          component: ModuleSettingsWapper,
+          name:'模型'
         }
       ]
     },

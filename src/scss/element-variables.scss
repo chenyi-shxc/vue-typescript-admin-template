@@ -1,0 +1,17 @@
+/*
+Write your variables here. All available variables can be
+found in element-ui/packages/theme-chalk/src/common/var.scss.
+For example, to overwrite the theme color:
+*/
+// $--color-primary: teal;
+$--color-primary:#6C8AB6;
+$--color-white:#FFFFFF;
+$--border-color-base:#CCCCCC;
+$--color-text-regular:#666666;
+$--color-text-primary:#333333;
+$--background-color-base:#FFFFFF;
+$--tooltip-fill: #455F85;
+/* icon font path, required */
+// $--font-path: '~element-ui/lib/theme-chalk/fonts';
+$--font-path:'./theme/fonts';
+@import '~element-ui/packages/theme-chalk/src/index';

@@ -13,6 +13,9 @@ import router from '@/router'
 import '@/icons/components'
 import '@/permission'
 
+import './plugins/axios' // this.axios 进行网络api请求
+import './plugins/element'
+
 Vue.use(ElementUI)
 Vue.use(SvgIcon, {
   tagName: 'svg-icon',
